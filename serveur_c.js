@@ -1,26 +1,45 @@
+const file  = require('express-fileupload');
+const session = require('express-session')
 
 const express = require( 'express' )
 const path = require( 'path' )
 
-const fs = require('fs');
-const path = require('path');
-const express = require('express');
-const app = express();
-const port = 4000;
-const bodyParser = require('body-parser');
-const { parse } = require('path');
-const { fstat } = require('fs');
-const axios = require('axios');
-const file  = require('express-fileupload');
-const session = require('express-session');
-
-const port = 3000
+const port = 4000
 const axios = require('axios')
 const { json } = require( 'express/lib/response' )
 const fs = require( 'fs' )
 const mustache = require('mustache')
-const {createConnection, createConnections, Connection}  =  require("typeorm");
+var mustacheExpress = require('mustache-express');
+const { response } = require('express');
 
+
+const {createConnection, createConnections, Connection}  =  require("typeorm");
+const bodyParser = require('body-parser')
+const app = express()
+app.engine('mustache', mustacheExpress());
+app.set('view engine','mustache');
+app.set('Views',__dirname +  '/views');
+
+app.set('trust proxy',1);
+app.use(session({
+    saveUninitialized: true,
+    secret:'Webtech',
+    resave:true,
+    cookie:{
+        secure:false,
+        expires:false,
+        maxAge:30 * 24 * 60 * 60 * 1000
+    }
+}));
+
+
+app.get("/formulaire_photo_souvenir", function(req, res) {
+ 
+    res.render("formulaire_photo_souvenir");
+
+
+
+} );
 // const connect = async () =>{
 
 //     try{
