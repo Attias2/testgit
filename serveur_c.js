@@ -1,4 +1,4 @@
-const file  = require('express-fileupload');
+const files  = require('express-fileupload');
 const session = require('express-session')
 
 const express = require( 'express' )
@@ -16,6 +16,9 @@ const mv = require('mv');
 const {createConnection, createConnections, Connection}  =  require("typeorm");
 const bodyParser = require('body-parser')
 const app = express()
+//const fileUpload = require('../lib/index');
+
+app.use(files());
 app.engine('mustache', mustacheExpress());
 app.set('view engine','mustache');
 app.set('Views',__dirname +  '/views');
@@ -42,19 +45,18 @@ app.get("/formulaire_photo_souvenir", function(req, res) {
 
     
 } );
-
+console.log(files)
 
 app.post('/formulaire_photo_souvenir', function(req, res) {
     const photo = req.body.photo;
     const description = req.body.description;
-    console.log(req.body)
-//"/image_push"+photo+"img.jpg"
-   /* res.files.mv("/image_push"+photo+"img.jpg", function(err) {
+   console.log(req.files.photo)
+    req.files.photo.mv("/views/"+photo+"img.jpg", function(err) {
         if (err)
          return res.status(500).send(err);
        
         res.send(err);
-       });*/
+       });
 
   res.render('formulaire_photo_souvenir',{photo, description})
   
