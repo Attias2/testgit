@@ -11,7 +11,7 @@ const fs = require( 'fs' )
 const mustache = require('mustache')
 var mustacheExpress = require('mustache-express');
 const { response } = require('express');
-
+const mv = require('mv');
 
 const {createConnection, createConnections, Connection}  =  require("typeorm");
 const bodyParser = require('body-parser')
@@ -48,8 +48,16 @@ app.post('/formulaire_photo_souvenir', function(req, res) {
     const photo = req.body.photo;
     const description = req.body.description;
     console.log(req.body)
- // res.send('formulaire_photo_souvenir',{photo, description})
+//"/image_push"+photo+"img.jpg"
+   /* res.files.mv("/image_push"+photo+"img.jpg", function(err) {
+        if (err)
+         return res.status(500).send(err);
+       
+        res.send(err);
+       });*/
+
   res.render('formulaire_photo_souvenir',{photo, description})
+  
 })
 
 const connect = async () =>{
