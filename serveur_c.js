@@ -32,14 +32,58 @@ app.use(session({
     }
 }));
 
+app.use(bodyParser.json());
 
+app.use(bodyParser.urlencoded({ extended: true }));
+/**/
 app.get("/formulaire_photo_souvenir", function(req, res) {
  
     res.render("formulaire_photo_souvenir");
 
-
-
+    
 } );
+
+
+app.post('/formulaire_photo_souvenir', function(req, res) {
+    const photo = req.body.photo;
+    const description = req.body.description;
+    console.log(req.body)
+ // res.send('formulaire_photo_souvenir',{photo, description})
+  res.render('formulaire_photo_souvenir',{photo, description})
+})
+
+const connect = async () =>{
+
+
+    try{
+
+        const connection = await createConnection({
+            type: "mysql",
+            host: "localhost",
+            port: 3306,
+            username: "root",
+            password: "",
+            database: "user"
+        });
+        connection.query('SELECT * FROM photo_souvenir', function(error, results, field){
+            if(error) throw error
+            console.log(results)
+        })
+
+        
+       
+
+        connection.createQueryBuilder().insert().into('photo_souvenir') .values([   { photo:"", description:"" }  ]) .execute();
+        
+        
+
+
+    } catch(e){
+        console.group(e)
+    }    
+
+};
+connect();
 // const connect = async () =>{
 
 //     try{
