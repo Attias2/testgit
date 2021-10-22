@@ -5,14 +5,14 @@ const path = require( 'path' )
 
 const port = 4000
 const axios = require('axios')
-const { json } = require( 'express/lib/response' )
+const { json, get } = require( 'express/lib/response' )
 const fs = require( 'fs' )
 const mustache = require('mustache')
 var mustacheExpress = require('mustache-express');
 const { response } = require('express');
 const mv = require('mv');
 
-const {createConnection, createConnections, Connection}  =  require("typeorm");
+const {createConnection, createConnections, Connection, getConnection}  =  require("typeorm");
 const bodyParser = require('body-parser')
 const app = express()
 //const fileUpload = require('../lib/index');
@@ -27,7 +27,7 @@ app.use(file({
 
 }));
 
-app.use('/',express.static('views'))
+app.use('/',express.static("d1"))
 
 app.engine('mustache', mustacheExpress());
 app.set('view engine','mustache');
@@ -55,55 +55,51 @@ app.get("/formulaire_photo_souvenir", function(req, res) {
 
     
 } );
-console.log(file)
+//console.log(file)
 
 app.post('/formulaire_photo_souvenir', function(req, res) {
-    const photo = req.body.photo;
-    const description = req.body.description;
-   console.log(req.file.photo)
-    req.file.photo.mv(photo+"img.jpg", function(err) {
+    const photo = req.body.photo
+    const description = req.body.description
+   //console.log(req.body.photo,'photo')
+    req.file.photo.mv("./d1/views/"+photo+"img.jpg", function(err) {
         if (err)
          return res.status(500).send(err);
        
         res.send(err);
        });
 
+     connect(photo, description)
+
+
   res.render('formulaire_photo_souvenir',{photo, description})
   
 })
 
-const connect = async () =>{
+const connection = createConnection({
+    type: "mysql",
+    host: "localhost",
+    port: 3306,
+    username: "root",
+    password: "",
+    database: "user"
+})
 
+const connect = async (d,s) =>{
 
-    try{
-
-        const connection = await createConnection({
-            type: "mysql",
-            host: "localhost",
-            port: 3306,
-            username: "root",
-            password: "",
-            database: "user"
-        });
-        connection.query('SELECT * FROM photo_souvenir', function(error, results, field){
+        let connection2 = getConnection()
+      connection2.query('SELECT * FROM photo_souvenir', function(error, results, field){
             if(error) throw error
             console.log(results)
         })
 
-        
-       
-
-        connection.createQueryBuilder().insert().into('photo_souvenir') .values([   { photo:"", description:"" }  ]) .execute();
-        
-        
-
-
-    } catch(e){
-        console.group(e)
-    }    
+        connection2.createQueryBuilder().insert().into('photo_souvenir') .values([   { photo:d, description:s }  ]) .execute();    
 
 };
-connect();
+
+
+
+
+//connect();
 // const connect = async () =>{
 
 //     try{
