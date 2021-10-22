@@ -56,20 +56,20 @@ app.get("/formulaire_photo_souvenir", function(req, res) {
     
 } );
 //console.log(file)
-
+// enctype="multipart/form-data"
 app.post('/formulaire_photo_souvenir', function(req, res) {
     const photo = req.body.photo
     const description = req.body.description
    //console.log(req.body.photo,'photo')
-    req.file.photo.mv("./d1/views/"+photo+"img.jpg", function(err) {
+    /*req.file.photo.mv("./d1/views/"+photo+"img.jpg", function(err) {
         if (err)
          return res.status(500).send(err);
        
         res.send(err);
-       });
+       });*/
 
-     connect(photo, description)
-
+    connect(photo, description)
+   const tab = afficher()
 
   res.render('formulaire_photo_souvenir',{photo, description})
   
@@ -86,14 +86,25 @@ const connection = createConnection({
 
 const connect = async (d,s) =>{
 
-        let connection2 = getConnection()
-      connection2.query('SELECT * FROM photo_souvenir', function(error, results, field){
+       let connection2 = getConnection()
+      /*connection2.query('SELECT * FROM photo_souvenir', function(error, results, field){
             if(error) throw error
             console.log(results)
-        })
+        })*/
 
         connection2.createQueryBuilder().insert().into('photo_souvenir') .values([   { photo:d, description:s }  ]) .execute();    
 
+};
+const afficher = async () =>{
+
+    let connection3 = getConnection()
+  return connection3.query('SELECT * FROM photo_souvenir', function(error, results, field){
+    console.log(results[0])
+    
+    })
+
+
+    
 };
 
 
