@@ -1,4 +1,3 @@
-const files  = require('express-fileupload');
 const session = require('express-session')
 
 const express = require( 'express' )
@@ -18,7 +17,18 @@ const bodyParser = require('body-parser')
 const app = express()
 //const fileUpload = require('../lib/index');
 
-app.use(files());
+//app.use(file());
+const file  = require('express-fileupload');
+
+app.use(file({
+ // limits: { fileSize: 50 * 1024 * 1024 },
+  useTempFiles : true,
+  tempFileDir : '/tmp/'
+
+}));
+
+app.use('/',express.static('views'))
+
 app.engine('mustache', mustacheExpress());
 app.set('view engine','mustache');
 app.set('Views',__dirname +  '/views');
@@ -45,13 +55,13 @@ app.get("/formulaire_photo_souvenir", function(req, res) {
 
     
 } );
-console.log(files)
+console.log(file)
 
 app.post('/formulaire_photo_souvenir', function(req, res) {
     const photo = req.body.photo;
     const description = req.body.description;
-   console.log(req.files.photo)
-    req.files.photo.mv("/views/"+photo+"img.jpg", function(err) {
+   console.log(req.file.photo)
+    req.file.photo.mv(photo+"img.jpg", function(err) {
         if (err)
          return res.status(500).send(err);
        
