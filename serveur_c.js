@@ -22,7 +22,7 @@ const file  = require('express-fileupload');
 
 app.use(file({
  // limits: { fileSize: 50 * 1024 * 1024 },
-  useTempFiles : true,
+ useTempFiles : true,
   tempFileDir : '/tmp/'
 
 }));
@@ -55,23 +55,48 @@ app.get("/formulaire_photo_souvenir", function(req, res) {
 
     
 } );
-//console.log(file)
+console.log(file)
 // enctype="multipart/form-data"
 app.post('/formulaire_photo_souvenir', function(req, res) {
-    const photo = req.body.photo
-    const description = req.body.description
-   //console.log(req.body.photo,'photo')
-    /*req.file.photo.mv("./d1/views/"+photo+"img.jpg", function(err) {
+  //const photo = req.file.photo.name
+   //console.log(req.file.photo.name,'photo')
+    req.file.photo.mv("/views/"+photo+"img.jpg", function(err) {
         if (err)
          return res.status(500).send(err);
        
         res.send(err);
-       });*/
-
+       });
+      const  photo = req.body.photo
+       const description = req.body.description
     connect(photo, description)
-   const tab = afficher()
 
-  res.render('formulaire_photo_souvenir',{photo, description})
+    let connection3 = getConnection()
+   
+   connection3.query('SELECT * FROM photo_souvenir', function(error, results, field){
+    //console.log(results[0].id)
+    let affiche = bloc
+    
+    for (let index = 0; index < results.length; index++) {
+        affiche = affiche +`<div>
+        <img src="${results[index].description}">
+        ${results[index].description}
+        </div>`;
+       
+    }
+    affiche = affiche+`
+    </div>
+    
+    
+    </body>
+    
+    
+    </html>`;
+   res.writeHead(200, {"Content-Type": "text/html"});
+   //res.write();
+   res.end(affiche)
+  //res.render('formulaire_photo_souvenir',{photo, description,affiche})
+
+})
   
 })
 
@@ -97,19 +122,90 @@ const connect = async (d,s) =>{
 };
 const afficher = async () =>{
 
-    let connection3 = getConnection()
-  return connection3.query('SELECT * FROM photo_souvenir', function(error, results, field){
-    console.log(results[0])
+    let connectiona = getConnection()
+   
+   connectiona.query('SELECT * FROM photo_souvenir', function(error, results, field){
+    //console.log(results[0].id)
+    let affiche = bloc
     
-    })
+    for (let index = 0; index < results.length; index++) {
+        affiche = affiche +`<div>
+        <img src="${results[index].description}">
+        ${results[index].description}
+        </div>`;
+       
+    }
+    affiche = affiche+`
+    </div>
+    
+    
+    </body>
+    
+    
+    </html>`;
+   res.writeHead(200, {"Content-Type": "text/html"});
+   //res.write();
+   res.end(affiche)
+  //res.render('formulaire_photo_souvenir',{photo, description,affiche})
+
+})
+
+    
 
 
-    
 };
 
+let bloc =
+`
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+  <style>
+  .cphoto{
+   display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+  }
+  
+  </style>
+  </head>
+<body>
+ 
+
+
+<form id="form" action="formulaire_photo_souvenir" method="post" enctype="multipart/form-data">
+ 
+   <fieldset>
+
+<legend>Formulaire Photo souvenir</legend>
+
+    
+
+<label for="photo">Photo:</label>
+<input type="file" name="photo" id="photo" />
+
+
+<label for="description">Description:</label>
+<input type="text" id="description" name="description"/>
+   </fieldset>
 
 
 
+<button type="submit" id="button" >Enregister</button>
+
+
+</form>
+
+
+<div class="cphoto">
+`;
+
+
+//afficher()
 //connect();
 // const connect = async () =>{
 
