@@ -11,15 +11,15 @@ const mustache = require('mustache')
 var mustacheExpress = require('mustache-express');
 const { response } = require('express');
 const mv = require('mv');
+const file  = require('express-fileupload');
 
 const {createConnection, createConnections, Connection, getConnection}  =  require("typeorm");
 const bodyParser = require('body-parser')
 const app = express()
 //const fileUpload = require('../lib/index');
-
+app.use('/',express.static("formulaire_photo_souvenir"))
 //app.use(file());
-const file  = require('express-fileupload');
-
+//app.use('/formulaire_photo_souvenir', express.static(__dirname + '/formulaire_photo_souvenir.mustache'));
 app.use(file({
  // limits: { fileSize: 50 * 1024 * 1024 },
  useTempFiles : true,
@@ -27,7 +27,7 @@ app.use(file({
 
 }));
 
-app.use('/',express.static("d1"))
+
 
 app.engine('mustache', mustacheExpress());
 app.set('view engine','mustache');
@@ -60,12 +60,13 @@ console.log(file)
 app.post('/formulaire_photo_souvenir', function(req, res) {
   //const photo = req.file.photo.name
    //console.log(req.file.photo.name,'photo')
-    req.file.photo.mv("/views/"+photo+"img.jpg", function(err) {
+   /*
+    req.file.photo.mv("./up/views/"+photo+"img.jpg", function(err) {
         if (err)
          return res.status(500).send(err);
        
         res.send(err);
-       });
+       });*/
       const  photo = req.body.photo
        const description = req.body.description
     connect(photo, description)
