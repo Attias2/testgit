@@ -11,16 +11,16 @@ const mustache = require('mustache')
 var mustacheExpress = require('mustache-express');
 const { response } = require('express');
 const mv = require('mv');
-const file  = require('express-fileupload');
+const files  = require('express-fileupload');
 
 const {createConnection, createConnections, Connection, getConnection}  =  require("typeorm");
 const bodyParser = require('body-parser')
 const app = express()
 //const fileUpload = require('../lib/index');
 app.use('/',express.static("formulaire_photo_souvenir"))
-//app.use(file());
+//app.use(files());
 //app.use('/formulaire_photo_souvenir', express.static(__dirname + '/formulaire_photo_souvenir.mustache'));
-app.use(file({
+app.use(files({
  // limits: { fileSize: 50 * 1024 * 1024 },
  useTempFiles : true,
   tempFileDir : '/tmp/'
@@ -48,30 +48,57 @@ app.use(session({
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
-/**/
+
+
 app.get("/formulaire_photo_souvenir", function(req, res) {
- 
-    res.render("formulaire_photo_souvenir");
+
+    console.log(afficher().then(function(e){console.log(e)}),1)
+    const connectionc = getConnection()
+   
+   connectionc.query('SELECT * FROM photo_souvenir', function(error, results, field){
+   // console.log(results)
+    let affiche =results
+    /*
+    for (let index = 0; index < results.length; index++) {
+        affiche = affiche +`<div>
+        <img src="${results[index].photo}">
+        ${results[index].description}
+        </div>`;
+       
+    }*/
+    
+    console.log(affiche,"apres")
+    res.render("formulaire_photo_souvenir",{results});
+    
 
     
 } );
-console.log(file)
+
+})
+
+
 // enctype="multipart/form-data"
 app.post('/formulaire_photo_souvenir', function(req, res) {
-  //const photo = req.file.photo.name
-   //console.log(req.file.photo.name,'photo')
-   /*
-    req.file.photo.mv("./up/views/"+photo+"img.jpg", function(err) {
+  const photo = req.files.photo
+  const nomPhoto = photo.name.substring(0, photo.name.length - 5)
+  
+  // console.log(photo1,'photo')
+   //console.log(photo2)
+   
+   /* req.files.*/photo.mv("./views/"+nomPhoto+"x.jpg", function(err) {
         if (err)
          return res.status(500).send(err);
        
         res.send(err);
-       });*/
-      const  photo = req.body.photo
-       const description = req.body.description
-    connect(photo, description)
+       });
 
-    let connection3 = getConnection()
+    const  photo2 = nomPhoto+"x.jpg"
+    const description = req.body.description
+    connect(photo2, description)/**/
+    res.redirect("/formulaire_photo_souvenir")
+
+    //res.render("/formulaire_photo_souvenir",{afficher:afficher()})
+    const connection3 = getConnection()
    
    connection3.query('SELECT * FROM photo_souvenir', function(error, results, field){
     //console.log(results[0].id)
@@ -92,14 +119,16 @@ app.post('/formulaire_photo_souvenir', function(req, res) {
     
     
     </html>`;
-   res.writeHead(200, {"Content-Type": "text/html"});
-   //res.write();
-   res.end(affiche)
-  //res.render('formulaire_photo_souvenir',{photo, description,affiche})
+
+  /* res.writeHead("Content-Type", "text/html");
+    res.write(affiche);
+   res.end()*/
+  //return res.render('formulaire_photo_souvenir',{afficher:results})
+})
+
 
 })
   
-})
 
 const connection = createConnection({
     type: "mysql",
@@ -111,7 +140,7 @@ const connection = createConnection({
 })
 
 const connect = async (d,s) =>{
-
+    
        let connection2 = getConnection()
       /*connection2.query('SELECT * FROM photo_souvenir', function(error, results, field){
             if(error) throw error
@@ -120,18 +149,24 @@ const connect = async (d,s) =>{
 
         connection2.createQueryBuilder().insert().into('photo_souvenir') .values([   { photo:d, description:s }  ]) .execute();    
 
+
 };
+
+
 const afficher = async () =>{
 
-    let connectiona = getConnection()
+
+
+
+    const connectionc = getConnection()
    
-   connectiona.query('SELECT * FROM photo_souvenir', function(error, results, field){
-    //console.log(results[0].id)
+   connectionc.query('SELECT * FROM photo_souvenir', function(error, results, field){
+   // console.log(results)
     let affiche = bloc
     
     for (let index = 0; index < results.length; index++) {
         affiche = affiche +`<div>
-        <img src="${results[index].description}">
+        <img src="${results[index].photo}">
         ${results[index].description}
         </div>`;
        
@@ -144,14 +179,29 @@ const afficher = async () =>{
     
     
     </html>`;
-   res.writeHead(200, {"Content-Type": "text/html"});
-   //res.write();
-   res.end(affiche)
-  //res.render('formulaire_photo_souvenir',{photo, description,affiche})
+    console.log(affiche,"apres")
+  /*  app.get("/formulaire_photo_souvenir", function(req, res) {
 
+        console.log(affiche)
+        res.render("formulaire_photo_souvenir",{afficher:affiche});
+        
+    
+        
+    } );*/
+   //res.writeHead(200, {"Content-Type": "text/html"});
+   //res.write();
+  //res.end(affiche)
 })
 
+/*
+app.get("/formulaire_photo_souvenir", function(req, res) {
+
+  res.render('formulaire_photo_souvenir',{/*photo, description,affiche})
+
+})*/
+
     
+ //return affiche
 
 
 };
@@ -205,6 +255,11 @@ let bloc =
 <div class="cphoto">
 `;
 
+/*</div>
+<div>
+        <img src="{{results[index].description}}">
+        {{description}}
+        </div> */
 
 //afficher()
 //connect();
